@@ -1,0 +1,38 @@
+
+- name: Add Elasticsearch APT repository key
+  shell: wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+  when: ansible_distribution == "Ubuntu"
+
+- name: Add Elasticsearch APT repository
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
+- name: Update APT cache
+  apt:
+    update_cache: yes
+  when: ansible_distribution == "Ubuntu"
+
+- name: Install Elasticsearch
+  apt:
+    name: elasticsearch
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
+- name: Download the Elastic Search in CentOS
+  get_url:
+    url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.9.2-x86_64.rpm
+    dest: /tmp/elasticsearch-7.9.2-x86_64.rpm
+  when: ansible_distribution == "CentOS"
+
+- name: Install Elastic Search in CentOS
+  yum:
+    name: /tmp/elasticsearch-7.9.2-x86_64.rpm
+    state: present
+  when: ansible_distribution == "CentOS"
+
+- name: Start Elastic Search
+  service:
+    name: elasticsearch
+    state: started
